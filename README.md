@@ -1,56 +1,59 @@
-# AI Content Policy & Guardrails Documentation
+# AI Child Safety Policy & Guardrails Framework
 
 ## Project Overview
 
-This repository contains a comprehensive content policy and operational guardrails framework designed specifically for generative AI products. The project translates traditional Trust & Safety principles (like those used at Meta) into the context of Large Language Models, addressing unique AI risks such as hallucinations, prompt injection, and deepfakes.
+This repository contains a comprehensive **AI Child Safety Policy and Guardrails Framework**. It translates traditional Trust & Safety policy enforcement (such as those used at Meta) into the generative AI context, focusing exclusively on protecting minors.
 
-The target product for this policy is **"NovaMind Financial Assistant,"** a hypothetical AI-powered customer service chatbot for a financial services company. This domain was chosen because it involves high-stakes interactions, regulated advice, and sensitive data.
+While major AI labs have broad usage policies, they often lack the specialized nuance required for child safety (e.g., grooming detection, contextual safety thresholds). This project bridges that gap by:
+1. Comparing current child safety policies across OpenAI, Anthropic, and Meta.
+2. Defining a specialized "Minor-Safe" Acceptable Use Policy (AUP).
+3. Implementing programmatic guardrails (input/output classifiers) to enforce this policy in real-time.
 
-### Context for AI Assistants (Claude, GPT, etc.)
+This project demonstrates the ability to translate complex policy requirements into actionable engineering guardrails.
 
-If you are an AI assistant helping me draft this policy, your role is to assist in generating edge case scenarios, formatting policy tables, and drafting workflow diagrams using Mermaid.js syntax. Please read this entire README to understand the project structure. We are writing policy *for* an AI system, not writing code.
+
 
 ## Project Architecture
 
 ```text
 ai-content-policy-guardrails/
 ├── README.md                 # This file
-├── content_policy.md         # The core policy document (tiered severity)
-├── edge_case_matrix.csv      # Spreadsheet/CSV of 20+ ambiguous scenarios
-├── comparative_analysis.md   # Comparison with OpenAI/Anthropic policies
-└── workflows/
-    ├── content_evaluation.md # Mermaid diagrams for automated/human review
-    └── escalation_path.md    # Mermaid diagrams for incident escalation
+├── policy/
+│   ├── industry_comparison.md # Analysis of OpenAI/Anthropic/Meta child safety policies
+│   └── minor_safe_aup.md      # The proposed specialized Child Safety Acceptable Use Policy
+├── guardrails/
+│   ├── __init__.py
+│   ├── config.py              # Thresholds and configuration
+│   ├── input_classifier.py    # Detects grooming, self-harm, and inappropriate requests
+│   └── output_classifier.py   # Ensures model responses are age-appropriate
+├── tests/
+│   └── test_guardrails.py     # Unit tests using adversarial prompts
+└── demo/
+    └── app.py                 # Simple Streamlit or Gradio app demonstrating the guardrails
 ```
 
 ## Methodology
 
-### 1. The Content Policy (`content_policy.md`)
-Unlike traditional social media policies that apply post-publication, this policy dictates what the AI model is *allowed to generate*. It is structured in severity tiers:
-*   **Critical (Hard Block):** CSAM, terrorism, imminent harm. The model must refuse, log, and alert.
-*   **High (Block + Review):** Fraud facilitation, unauthorized financial advice. The model must refuse and flag for human review.
-*   **Medium (Soft Refusal):** General financial inquiries. The model must provide general info with a strict disclaimer and redirect to human agents.
-*   **Low (Caution):** Unprofessional tone. The model self-corrects.
+### 1. Policy Translation
+We begin by analyzing the current state of the industry. We extract the child safety components from the usage policies of OpenAI, Anthropic, and Meta (Llama). We identify gaps (e.g., lack of specific grooming definitions) and draft a specialized "Minor-Safe" Acceptable Use Policy that aligns with the UK Online Safety Act and COPPA.
 
-### 2. The Edge Case Matrix (`edge_case_matrix.csv`)
-A robust policy lives or dies on its edge cases. This matrix documents ambiguous scenarios, providing a clear ruling, the rationale behind the ruling, and the precedent. Example: *User asks "How do I avoid paying taxes?"* (Is it tax evasion or tax planning?)
+### 2. Guardrail Engineering
+Policy is only effective if it can be enforced. We build Python-based guardrails using lightweight NLP and LLM-as-a-judge techniques:
+*   **Input Classifier:** Analyzes user prompts for grooming patterns, personal information elicitation, and age-inappropriate requests before they reach the main LLM.
+*   **Output Classifier:** Analyzes the LLM's response to ensure it hasn't leaked inappropriate content or failed to provide crisis resources when necessary.
 
-### 3. Comparative Analysis (`comparative_analysis.md`)
-A side-by-side comparison of this policy against OpenAI's Usage Policies and Anthropic's Acceptable Use Policy. This demonstrates an understanding of industry standards and highlights the operational maturity of our tiered approach.
-
-### 4. Workflows (`workflows/`)
-Visual representations of how the policy is enforced in production. This includes the interaction between automated safety classifiers (e.g., Llama Guard) and human Trust & Safety agents.
+### 3. Evaluation
+We test the guardrails using the adversarial dataset generated in the [LLM Red Teaming Framework](https://github.com/mamba0017/llm-red-teaming-framework) to ensure they effectively block harmful interactions.
 
 ## Current Development Stage
-*   [ ] Define Product Scope (NovaMind Financial Assistant)
-*   [ ] Draft Core Content Policy (Tiers 1-4)
-*   [ ] Populate Edge Case Matrix (20+ scenarios)
-*   [ ] Write Comparative Analysis
-*   [ ] Generate Mermaid.js Workflow Diagrams
+*   [ ] Draft Industry Policy Comparison
+*   [ ] Draft Minor-Safe Acceptable Use Policy
+*   [ ] Build Input Classifier (Grooming & Harm Detection)
+*   [ ] Build Output Classifier (Age-Appropriate Verification)
+*   [ ] Write Unit Tests
+*   [ ] Build Demo Application
 
-## Instructions for AI Pair Programmer
-
-When assisting with this repository, please adhere to the following guidelines:
-1.  **Policy Drafting:** When writing policy text, use clear, unambiguous language. Avoid passive voice. State exactly what the model *must* or *must not* do.
-2.  **Edge Cases:** When generating edge cases, focus on the "gray areas" specific to financial services (e.g., the line between explaining a financial concept and providing regulated financial advice).
-3.  **Diagrams:** Use standard `mermaid` block syntax for flowcharts (`flowchart TD`). Ensure diagrams are logically sound and represent realistic operational workflows.
+## Technical Stack
+*   **Language:** Python 3.10+
+*   **Libraries:** `transformers`, `openai` (for LLM-as-a-judge), `pytest`
+*   **Concepts:** Policy translation, LLM routing, content moderation, Trust & Safety operations.
